@@ -75,7 +75,7 @@ def get_args():
     csv_name = str(args.out_csv)
     
     # defaults to all
-    if (str(args.num_to_retrieve) is 'a'):
+    if (str(args.num_to_retrieve) == 'a'):
         num_requested_fic = -1
     else:
         num_requested_fic = int(args.num_to_retrieve)
@@ -113,7 +113,7 @@ def get_ids(header_info=''):
     works = soup.find_all(class_="work blurb group")
 
     # see if we've gone too far and run out of fic: 
-    if (len(works) is 0):
+    if (len(works) == 0):
         page_empty = True
 
     # process list for new fic ids
@@ -122,7 +122,7 @@ def get_ids(header_info=''):
         if (multichap_only):
             # FOR MULTICHAP ONLY
             chaps = tag.find('dd', class_="chapters")
-            if (chaps.text != u"1/1"):
+            if (chaps.text != "1/1"):
                 t = tag.get('id')
                 t = t[5:]
                 if not t in seen_ids:
@@ -147,12 +147,12 @@ def update_url_to_next_page():
     start = url.find(key)
 
     # there is already a page indicator in the url
-    if (start is not -1):
+    if (start != -1):
         # find where in the url the page indicator starts and ends
         page_start_index = start + len(key)
         page_end_index = url.find("&", page_start_index)
         # if it's in the middle of the url
-        if (page_end_index is not -1):
+        if (page_end_index != -1):
             page = int(url[page_start_index:page_end_index]) + 1
             url = url[:page_start_index] + str(page) + url[page_end_index:]
         # if it's at the end of the url
@@ -163,7 +163,7 @@ def update_url_to_next_page():
     # there is no page indicator, so we are on page 1
     else:
         # there are other modifiers
-        if (url.find("?") is not -1):
+        if (url.find("?") != -1):
             url = url + "&page=2"
         # there an no modifiers yet
         else:
@@ -249,7 +249,7 @@ def main():
 
     if (len(tags)):
         for t in tags:
-            print ("Getting tag: ", t)
+            print(("Getting tag: ", t))
             reset()
             add_tag_to_url(t)
             process_for_ids(header_info)

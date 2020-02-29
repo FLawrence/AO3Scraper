@@ -54,7 +54,7 @@ def get_stats(meta):
 	'''
 	categories = ['language', 'published', 'status', 'words', 'chapters', 'comments', 'kudos', 'bookmarks', 'hits'] 
 
-	stats = list(map(lambda category: meta.find("dd", class_=category), categories))
+	stats = list([meta.find("dd", class_=category) for category in categories])
 
 	if not stats[2]:
 		stats[2] = stats[1] #no explicit completed field -- one shot
@@ -82,7 +82,7 @@ def get_tags(meta):
 	rating, category, fandom, pairing, characters, additional_tags
 	'''
 	tags = ['rating', 'category', 'fandom', 'relationship', 'character', 'freeform']
-	return list(map(lambda tag: get_tag_info(tag, meta), tags))
+	return list([get_tag_info(tag, meta) for tag in tags])
 
 
 def access_denied(soup):
@@ -100,7 +100,7 @@ def write_fic_to_csv(fic_id, only_first_chap, writer, errorwriter, header_info='
 	and the fic content itself.
 	header_info should be the header info to encourage ethical scraping.
 	'''
-	print('Scraping ', fic_id)
+	print(('Scraping ', fic_id))
 	url = 'http://archiveofourown.org/works/'+str(fic_id)+'?view_adult=true'
 	if not only_first_chap:
 		url = url + '&amp;view_full_work=true'
@@ -121,11 +121,11 @@ def write_fic_to_csv(fic_id, only_first_chap, writer, errorwriter, header_info='
 		content = soup.find("div", id= "chapters")
 		chapters = content.select('p')
 		chaptertext = '\n\n'.join([unidecode(chapter.text) for chapter in chapters])
-		row = [fic_id] + [title] + list(map(lambda x: ', '.join(x), tags)) + stats + [chaptertext]
+		row = [fic_id] + [title] + list([', '.join(x) for x in tags]) + stats + [chaptertext]
 		try:
 			writer.writerow(row)
 		except:
-			print('Unexpected error: ', sys.exc_info()[0])
+			print(('Unexpected error: ', sys.exc_info()[0]))
 			error_row = [fic_id] +  [sys.exc_info()[0]]
 			errorwriter.writerow(error_row)
 		print('Done.')
@@ -188,7 +188,7 @@ def main():
 				csv_fname = fic_ids[0]
 				with open(csv_fname, 'r+') as f_in:
 					reader = csv.reader(f_in)
-					if restart is '':
+					if restart == '':
 						for row in reader:
 							if not row:
 								continue
