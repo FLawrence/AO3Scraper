@@ -1,0 +1,7 @@
+
+*.bak
+*.csv
+*.txt
+*.json
+.DS_Store
+*.pyc

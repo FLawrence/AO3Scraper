@@ -211,4 +211,61 @@ def main():
 					write_fic_to_csv(fic_id, only_first_chap, writer, errorwriter, headers)
 					time.sleep(delay)
 
-main()
+
+def module_entry_main(in_fic_ids, in_csv_out="fanfics.csv", in_headers='', in_restart='', in_is_csv='', in_only_first_chap=''):
+	#fic_ids, csv_out, headers, restart, is_csv, only_first_chap = get_args()
+	fic_ids = in_fic_ids
+	csv_out = in_csv_out
+	headers = in_headers
+	restart = in_restart
+	is_csv = (len(in_fic_ids) == 1 and '.csv' in in_fic_ids[0]) 
+	only_first_chap = False
+	if in_only_first_chap != "":
+		only_first_chap = True
+	else:
+		only_first_chap = False
+
+	#print(in_fic_ids[0] + ": " + str(is_csv))
+
+	delay = 5
+	os.chdir(os.getcwd())
+	with open(csv_out, 'a') as f_out:
+		writer = csv.writer(f_out)
+		with open("errors_" + csv_out, 'a') as e_out:
+			errorwriter = csv.writer(e_out)
+			#does the csv already exist? if not, let's write a header row.
+			if os.stat(csv_out).st_size == 0:
+				print('Writing a header row for the csv.')
+				header = ['work_id', 'title', 'rating', 'category', 'fandom', 'relationship', 'character', 'additional tags', 'language', 'published', 'status', 'status date', 'words', 'chapters', 'comments', 'kudos', 'bookmarks', 'hits', 'body']
+				writer.writerow(header)
+			if is_csv:
+				csv_fname = fic_ids[0]
+				with open(csv_fname, 'r+') as f_in:
+					reader = csv.reader(f_in)
+					if restart == '':
+						for row in reader:
+							if not row:
+								continue
+							write_fic_to_csv(row[0], only_first_chap, writer, errorwriter, headers)
+							time.sleep(delay)
+					else: 
+						found_restart = False
+						for row in reader:
+							if not row:
+								continue
+							found_restart = process_id(row[0], restart, found_restart)
+							if found_restart:
+								write_fic_to_csv(row[0], only_first_chap, writer, errorwriter, headers)
+								time.sleep(delay)
+							else:
+								print('Skipping already processed fic')
+
+			else:
+				for fic_id in fic_ids:
+					write_fic_to_csv(fic_id, only_first_chap, writer, errorwriter, headers)
+					time.sleep(delay)	
+
+
+
+if __name__ == '__main__':
+    main()

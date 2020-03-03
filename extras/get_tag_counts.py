@@ -28,13 +28,13 @@ def get_user_params():
 	# e.g. https://archiveofourown.org/tags/Fluff
 	parser = argparse.ArgumentParser(description='Extract metadata from a fic csv')
 	parser.add_argument(
-		'url', metavar='url', 
+		'url', metavar='url',
 		help='the name of the url for the tag')
 	parser.add_argument(
-		'csv', metavar='csv', 
+		'csv', metavar='csv', default='fanfics.csv',
 		help='the name of the csv with the base set of metadata')
 	parser.add_argument(
-		'out_csv', metavar='out_csv', 
+		'out_csv', metavar='out_csv', default='count.csv',
 		help='the name of the output csv')
 
 	args = parser.parse_args()
@@ -69,17 +69,17 @@ def main():
 	tags = get_tag_equivalencies()
 	count = 0
 
-	with open(input_csv_name, 'rb') as incsv:
+	with open(input_csv_name, 'r') as incsv:
 		with open(output_csv_name, 'a') as outcsv:
 			rd = csv.reader(incsv, delimiter=',', quotechar='"')
 			wr = csv.writer(outcsv, delimiter=',', quotechar='"')
 			#skip first line
-			rd.next()
+			next(rd)
 			for row in rd:
 				if contains_tag(row, tags):
 					count = count + 1
 					wr.writerow(row)
 
-	print count
+	print(count)
 
 main()

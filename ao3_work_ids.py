@@ -190,7 +190,7 @@ def add_tag_to_url(tag):
 # 
 def write_ids_to_csv(ids):
     global num_recorded_fic
-    with open(csv_name + ".csv", 'a') as csvfile:
+    with open(csv_name + ".csv", 'a+') as csvfile:
         wr = csv.writer(csvfile, delimiter=',')
         for id in ids:
             if (not_finished()):
@@ -258,4 +258,30 @@ def main():
 
     print ("That's all, folks.")
 
-main()
+def module_entry_main(in_url, in_csv_name, in_header_info, in_num_requested_fic):
+    global url
+    global csv_name
+    global num_requested_fic
+    global num_recorded_fic
+
+    url = in_url
+    csv_name = in_csv_name
+    header_info = in_header_info
+    num_requested_fic = in_num_requested_fic
+    num_recorded_fic = 0
+
+    print ("processing " + url + "...\n")
+
+    if (len(tags)):
+        for t in tags:
+            print(("Getting tag: ", t))
+            reset()
+            add_tag_to_url(t)
+            process_for_ids(header_info)
+    else:
+        process_for_ids(header_info)
+
+    print ("That's all, folks.")
+
+if __name__ == '__main__':
+    main()
