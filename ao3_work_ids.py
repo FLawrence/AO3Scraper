@@ -254,6 +254,7 @@ def main():
             add_tag_to_url(t)
             process_for_ids(header_info)
     else:
+        reset()
         process_for_ids(header_info)
 
     print ("That's all, folks.")
@@ -270,7 +271,7 @@ def module_entry_main(in_url, in_csv_name, in_header_info, in_num_requested_fic)
     num_requested_fic = in_num_requested_fic
     num_recorded_fic = 0
 
-    print ("processing " + url + "...\n")
+    print ("processing " + url + " ...\n")
 
     if (len(tags)):
         for t in tags:
