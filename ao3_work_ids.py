@@ -104,37 +104,47 @@ def get_args():
 def get_ids(header_info=''):
     global page_empty
     headers = {'user-agent' : header_info}
-    req = requests.get(url, headers=headers)
-    soup = BeautifulSoup(req.text, "lxml")
+    try:
+        req = requests.get(url, headers=headers)
+    except IOError as err:
+        print("ERROR: " + str(err))
+        print("Trying again with verify set to false")
+        req = requests.get(url, headers=headers, verify=False)
 
-    # some responsiveness in the "UI"
-    sys.stdout.write('.')
-    sys.stdout.flush()
-    works = soup.find_all(class_="work blurb group")
+    if req.status_code == 200:
+        soup = BeautifulSoup(req.text, "lxml")
 
-    # see if we've gone too far and run out of fic: 
-    if (len(works) == 0):
-        page_empty = True
+        # some responsiveness in the "UI"
+        sys.stdout.write('.')
+        sys.stdout.flush()
+        works = soup.find_all(class_="work blurb group")
 
-    # process list for new fic ids
-    ids = []
-    for tag in works:
-        if (multichap_only):
-            # FOR MULTICHAP ONLY
-            chaps = tag.find('dd', class_="chapters")
-            if (chaps.text != "1/1"):
+        # see if we've gone too far and run out of fic: 
+        if (len(works) == 0):
+            page_empty = True
+
+        # process list for new fic ids
+        ids = []
+        for tag in works:
+            if (multichap_only):
+                # FOR MULTICHAP ONLY
+                chaps = tag.find('dd', class_="chapters")
+                if (chaps.text != "1/1"):
+                    t = tag.get('id')
+                    t = t[5:]
+                    if not t in seen_ids:
+                        ids.append(t)
+                        seen_ids.append(t)
+            else:
                 t = tag.get('id')
                 t = t[5:]
                 if not t in seen_ids:
                     ids.append(t)
                     seen_ids.append(t)
-        else:
-            t = tag.get('id')
-            t = t[5:]
-            if not t in seen_ids:
-                ids.append(t)
-                seen_ids.append(t)
-    return ids
+        return ids
+    else:
+        print("Failed to get ids for " + url)
+        return []
 
 # 
 # update the url to move to the next page

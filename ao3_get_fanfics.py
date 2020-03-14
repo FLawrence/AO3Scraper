@@ -105,7 +105,13 @@ def write_fic_to_csv(fic_id, only_first_chap, writer, errorwriter, header_info='
 	if not only_first_chap:
 		url = url + '&amp;view_full_work=true'
 	headers = {'user-agent' : header_info}
-	req = requests.get(url, headers=headers)
+	try:
+		req = requests.get(url, headers=headers)
+	except IOError as err:
+		print("ERROR: " + str(err))
+		print(f"Trying {url} again with verify set to false")
+		req = requests.get(url, headers=headers, verify=False)
+
 	src = req.text
 	soup = BeautifulSoup(src, 'html.parser')
 	if (access_denied(soup)):
@@ -173,7 +179,7 @@ def process_id(fic_id, restart, found):
 
 def main():
 	fic_ids, csv_out, headers, restart, is_csv, only_first_chap = get_args()
-	delay = 5
+	delay = 10
 	os.chdir(os.getcwd())
 	with open(csv_out, 'a') as f_out:
 		writer = csv.writer(f_out)
@@ -227,7 +233,7 @@ def module_entry_main(in_fic_ids, in_csv_out="fanfics.csv", in_headers='', in_re
 
 	#print(in_fic_ids[0] + ": " + str(is_csv))
 
-	delay = 5
+	delay = 10
 	os.chdir(os.getcwd())
 	with open(csv_out, 'a') as f_out:
 		writer = csv.writer(f_out)
